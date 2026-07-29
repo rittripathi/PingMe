@@ -43,7 +43,9 @@ class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
-
+class TelegramConnect(BaseModel):
+    """What the client sends us to link their Telegram account."""
+    chat_id: str
 # ---------- Auth token schemas ----------
 
 class Token(BaseModel):
