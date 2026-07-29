@@ -7,12 +7,12 @@ database.
 Think of this file as the "wiring" that lets the rest of the app talk to the
 database without every other file needing to know the connection details.
 """
-
 import os
+from contextlib import contextmanager
+
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
-
 # Load variables from the .env file (like DATABASE_URL) into the environment.
 load_dotenv()
 
@@ -51,6 +51,21 @@ def get_db():
     finally:
         db.close()
 
+@contextmanager
+def get_db_session():
+    """
+    Same idea as get_db(), but for use OUTSIDE of FastAPI -- specifically,
+    inside Celery tasks, which have no request/response cycle and therefore
+    no dependency injection to call get_db() through. Use it like:
+
+        with get_db_session() as db:
+            db.query(...)
+    """
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 # ==============================================================================
 # ROLE OF THIS FILE:
