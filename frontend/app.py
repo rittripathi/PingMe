@@ -15,7 +15,7 @@ import requests
 import streamlit as st
 
 # Change this once, later, to your deployed Render URL instead of localhost.
-API_BASE_URL = "http://localhost:8000"
+API_BASE_URL = "https://pingme-nmju.onrender.com"
 
 st.set_page_config(page_title="PingMe", page_icon="🔔")
 
