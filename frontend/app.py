@@ -118,28 +118,35 @@ def show_telegram_section():
 
 def show_create_trigger_section():
     st.subheader("Create a new trigger")
+
+    trigger_type = st.selectbox("Trigger type", ["PRICE", "AQI"])
+
+    if trigger_type == "AQI":
+        st.info(
+            "Find your coordinates on [Google Maps](https://maps.google.com) -- "
+            "right-click any spot, then click the lat/long numbers to copy them. "
+            "Paste below as: **28.6139,77.2090** (latitude,longitude, no spaces)"
+        )
+        asset_label, asset_placeholder, target_label = "Latitude,Longitude", "28.6139,77.2090", "Target AQI"
+    else:
+        asset_label, asset_placeholder, target_label = "Asset (e.g. bitcoin, ethereum, BTC)", "bitcoin", "Target value (USD)"
+
     with st.form("create_trigger_form"):
-        asset = st.text_input("Asset (e.g. bitcoin, ethereum, BTC)")
+        asset = st.text_input(asset_label, placeholder=asset_placeholder)
         condition = st.selectbox("Condition", ["<", ">"])
-        target_value = st.number_input("Target value (USD)", min_value=0.0, step=100.0)
+        target_value = st.number_input(target_label, min_value=0.0, step=100.0)
         submitted = st.form_submit_button("Create trigger")
 
     if submitted:
         response = requests.post(
             f"{API_BASE_URL}/triggers/",
-            json={"asset": asset, "condition": condition, "target_value": target_value},
+            json={"trigger_type": trigger_type, "asset": asset, "condition": condition, "target_value": target_value},
             headers=auth_headers(),
         )
         if response.status_code == 200:
-            st.success(f"Trigger created: ping me when {asset} {condition} {target_value}")
-            # No st.rerun() needed here -- show_triggers_list_section() runs
-            # right after this in the same script pass and does its own
-            # fresh GET request, so the new trigger already shows up below
-            # without forcing a restart (which would also wipe this message
-            # off the screen before you could ever see it).
+            st.success(f"Trigger created: ping me when {trigger_type} for {asset} {condition} {target_value}")
         else:
             st.error(response.json().get("detail", "Something went wrong"))
-
 
 def show_triggers_list_section():
     st.subheader("Your triggers")
