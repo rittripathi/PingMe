@@ -34,6 +34,7 @@ def create_trigger(
     new_trigger = models.Trigger(
         user_id=current_user.id,
         asset=trigger_in.asset,
+        trigger_type=trigger_in.trigger_type,
         condition=trigger_in.condition,
         target_value=trigger_in.target_value,
     )
