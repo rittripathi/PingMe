@@ -56,16 +56,17 @@ class Token(BaseModel):
 
 # ---------- Trigger schemas ----------
 
+# schemas.py — updated
 class TriggerCreate(BaseModel):
-    """What the client sends us when creating a new trigger."""
-    asset: str            # e.g. "bitcoin"
-    condition: str         # e.g. "<" or ">"
-    target_value: float    # e.g. 50000.0
+    trigger_type: str = "PRICE"   # "PRICE" or "AQI" for now
+    asset: str                     # coin ticker for PRICE, city name for AQI
+    condition: str
+    target_value: float
 
 
 class TriggerOut(BaseModel):
-    """What we send back when returning trigger information."""
     id: int
+    trigger_type: str
     asset: str
     condition: str
     target_value: float
@@ -74,7 +75,6 @@ class TriggerOut(BaseModel):
 
     class Config:
         from_attributes = True
-
 
 # ==============================================================================
 # ROLE OF THIS FILE:

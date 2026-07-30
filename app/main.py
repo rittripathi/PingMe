@@ -6,7 +6,7 @@ Run it with:  uvicorn app.main:app --reload
 """
 
 from fastapi import FastAPI
-from app.routers import auth_routes, trigger_routes, user_routes
+from app.routers import auth_routes, trigger_routes, user_routes, internal_routes
 from app.database import Base, engine
 
 # This line looks at every model defined in models.py (via Base) and creates
@@ -26,6 +26,7 @@ app = FastAPI(
 app.include_router(auth_routes.router)
 app.include_router(user_routes.router)
 app.include_router(trigger_routes.router)
+app.include_router(internal_routes.router)
 
 
 @app.get("/health")
