@@ -1,44 +1,24 @@
-"""
-main.py
--------
-This is the entry point of our FastAPI application.
-Run it with:  uvicorn app.main:app --reload
-"""
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware 
 from app.routers import auth_routes, trigger_routes, user_routes, internal_routes
 from app.database import Base, engine
 
-# This line looks at every model defined in models.py (via Base) and creates
-# the matching tables in Postgres if they don't already exist.
-# NOTE: this is fine for Phase 1 learning. In a real production app, you'd
-# use a migration tool (Alembic) instead so you can change tables safely
-# without losing data -- that's something we can add in a later phase.
+
 Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title="PingMe",
     description="A unified alert platform -- ping me when X happens.",
     version="0.1.0",
 )
-app = FastAPI(
-    title="PingMe",
-    description="A unified alert platform -- ping me when X happens.",
-    version="0.1.0",
-)
 
-# Lets a browser-based frontend (served from a different origin) call this API.
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # fine for a project; lock this to your real frontend URL later
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-app.include_router(auth_routes.router)
-...
-# Plug in our route files. Each one owns a URL prefix (/auth, /triggers).
 
 app.include_router(auth_routes.router)
 app.include_router(user_routes.router)
@@ -52,9 +32,3 @@ def health_check():
     return {"status": "ok"}
 
 
-# ==============================================================================
-# ROLE OF THIS FILE:
-# Creates the FastAPI app, creates database tables on startup, and wires in
-# the route files (auth_routes, trigger_routes). This is the file you point
-# uvicorn at to actually run the server.
-# ==============================================================================

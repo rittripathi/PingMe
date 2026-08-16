@@ -1,4 +1,3 @@
-# app/trigger_handlers/base.py
 from abc import ABC, abstractmethod
 from sqlalchemy.orm import Session
 from app import models

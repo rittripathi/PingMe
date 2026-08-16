@@ -1,10 +1,4 @@
-# app/aqi_service.py
-"""
-aqi_service.py
-----------------
-Looks up the current AQI for a "latitude,longitude" string using AQICN's
-free API. One external call, no geocoding step.
-"""
+
 
 import os
 import requests
@@ -17,10 +11,7 @@ AQICN_URL_TEMPLATE = "https://api.waqi.info/feed/geo:{lat};{lon}/"
 
 
 def get_current_aqi(coordinates: str) -> float:
-    """
-    coordinates: a string like "28.6139,77.2090" (latitude,longitude).
-    Returns the AQI reading from the nearest monitoring station.
-    """
+    
     if not WAQI_API_TOKEN:
         raise ValueError("WAQI_API_TOKEN is not set. Check your .env file.")
 
@@ -45,12 +36,3 @@ def get_current_aqi(coordinates: str) -> float:
         raise ValueError(f"No AQI station found near coordinates '{coordinates}'.")
 
     return data["data"]["aqi"]
-
-
-# ==============================================================================
-# ROLE OF THIS FILE:
-# Wraps AQICN's geo-based feed behind one function -- takes the raw
-# "lat,lon" string the user typed in, returns a real AQI number. Same
-# shape as price_service.py's get_current_price(): one external call in,
-# one clean number out.
-# ==============================================================================

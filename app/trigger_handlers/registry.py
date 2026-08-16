@@ -1,4 +1,3 @@
-# app/trigger_handlers/registry.py
 from app.trigger_handlers.crypto_price import CryptoPriceHandler
 from app.trigger_handlers.aqi import AQIHandler
 

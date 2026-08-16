@@ -1,13 +1,3 @@
-"""
-routers/trigger_routes.py
----------------------------
-API endpoints for creating, listing, and deleting triggers.
-
-Important Phase 1 note: creating a trigger here only SAVES it to the
-database. Nothing actually checks the bitcoin price or sends a Telegram
-message yet -- that logic gets added in Phase 2 and Phase 3.
-"""
-
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -25,12 +15,6 @@ def create_trigger(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.get_current_user),
 ):
-    """
-    Create a new trigger for the logged-in user.
-    `current_user` is filled in automatically by the get_current_user
-    dependency -- it reads the JWT from the request and looks up the user,
-    so this function never has to handle login logic itself.
-    """
     new_trigger = models.Trigger(
         user_id=current_user.id,
         asset=trigger_in.asset,
@@ -49,7 +33,6 @@ def list_triggers(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.get_current_user),
 ):
-    """Return only the triggers that belong to the logged-in user."""
     return db.query(models.Trigger).filter(models.Trigger.user_id == current_user.id).all()
 
 
@@ -59,11 +42,6 @@ def delete_trigger(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.get_current_user),
 ):
-    """
-    Delete a trigger -- but ONLY if it belongs to the logged-in user.
-    This ownership check matters: without it, any logged-in user could
-    delete anyone else's trigger just by guessing an ID number.
-    """
     trigger = (
         db.query(models.Trigger)
         .filter(models.Trigger.id == trigger_id, models.Trigger.user_id == current_user.id)
@@ -82,12 +60,6 @@ def check_trigger_now(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.get_current_user),
 ):
-    """
-    Manually run ONE trigger's check right now, instead of waiting for the
-    scheduler. Delegates the actual price-check-notify-log work to
-    trigger_service.run_trigger_check -- the exact same function the
-    automatic Celery task (Phase 3) calls every 60 seconds.
-    """
     trigger = (
         db.query(models.Trigger)
         .filter(models.Trigger.id == trigger_id, models.Trigger.user_id == current_user.id)

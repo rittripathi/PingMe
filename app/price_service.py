@@ -64,21 +64,9 @@ def get_current_price(asset: str, vs_currency: str = "usd") -> float:
 
 
 def condition_met(current_value: float, condition: str, target_value: float) -> bool:
-    """
-    Check whether a trigger's condition is satisfied right now.
-    e.g. condition_met(48000, "<", 50000) -> True
-    """
     if condition == "<":
         return current_value < target_value
     if condition == ">":
         return current_value > target_value
     raise ValueError(f"Unsupported condition: {condition}")
 
-
-# ==============================================================================
-# ROLE OF THIS FILE:
-# Talks to the outside world (CoinGecko) to get a real price, and decides
-# whether a trigger's condition is currently true. This is the "brain" of
-# PingMe -- everything else so far has just stored and retrieved data; this
-# file is what actually checks something.
-# ==============================================================================
