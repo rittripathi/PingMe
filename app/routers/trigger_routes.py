@@ -13,7 +13,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app import auth, models, schemas,notifier, price_service, trigger_service
+from app import auth, models, schemas, trigger_service
 from app.database import get_db
 
 router = APIRouter(prefix="/triggers", tags=["Triggers"])
@@ -106,34 +106,4 @@ def check_trigger_now(
         return trigger_service.run_trigger_check(trigger, current_user, db)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    fired = price_service.condition_met(current_price, trigger.condition, trigger.target_value)
-
-    if fired:
-        message = (
-            f"PingMe alert: {trigger.asset} is now {current_price} "
-            f"(condition: {trigger.condition} {trigger.target_value})"
-        )
-        notifier.send_telegram_message(current_user.telegram_chat_id, message)
-
-    # Log this check either way -- fired or not -- so we build a real history.
-    event = models.TriggerEvent(
-        trigger_id=trigger.id,
-        checked_value=current_price,
-        fired=fired,
-    )
-    db.add(event)
-    db.commit()
-
-    return {
-        "asset": trigger.asset,
-        "current_price": current_price,
-        "condition": f"{trigger.condition} {trigger.target_value}",
-        "fired": fired,
-    }
-# ==============================================================================
-# ROLE OF THIS FILE:
-# Exposes /triggers endpoints (create, list, delete), all protected by login.
-# This is where a user's "ping me when..." rules get stored. In later phases,
-# a background worker reads from this same `triggers` table to decide what
-# to check -- this file never talks to CoinGecko or Telegram directly.
-# ==============================================================================
+    
