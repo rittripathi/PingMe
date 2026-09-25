@@ -1,0 +1,27 @@
+# Free-hosting path (see README's "Hosting for free" section). One web
+# service, no background worker, no Redis — cron-job.org drives /tick
+# instead of Celery Beat. This is a deliberate downgrade from the
+# Celery/Redis architecture used locally, made specifically because
+# Render's free tier doesn't include an always-on background worker.
+services:
+  - type: web
+    name: pingme
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: MODEL_NAME
+        value: openai/gpt-oss-120b
+      - key: DATABASE_URL
+        sync: false   # Neon free Postgres connection string, postgresql+asyncpg://...
+      - key: TICK_SECRET
+        sync: false   # set this — see README before exposing /tick publicly
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_CHAT_ID
+        sync: false
+      - key: ENABLE_DISCOVERY
+        value: "false"
